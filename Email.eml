@@ -1,0 +1,50 @@
+Subject: Receipt & User Data: Observations, Questions & Next Steps
+
+Hello! 
+
+I’ve completed the initial exploration of our receipt, user, and brand datasets, and I wanted to share a few findings and questions.
+
+1.Key Questions:
+What is the expected lifecycle of a receipt? (e.g., how soon after purchase should a user scan it?)
+
+Should rejected receipts be retained for analytics, or excluded from some KPIs?
+
+Can a user scan a receipt without purchasing a brand that's in our system?
+
+Should the totalSpent and purchasedItemCount always be populated? There are cases where both are missing or inconsistent.
+
+2.How I Found Data Quality Issues:
+Using PySpark, I ran profile checks on each dataset. This included:
+
+Missing values (e.g., purchaseDate, userId, brand name)
+
+Invalid or out-of-order timestamps (e.g., receipts scanned before purchase)
+
+Duplicates or empty strings in fields like brand names and user roles
+
+Unexpected rewardsReceiptStatus values beyond "Accepted" or "Rejected"
+
+3.What I Need to Resolve Issues:
+Confirmation on which fields are required vs optional for analytics
+
+Definitions of valid statuses and lifecycle flows for users and receipts
+
+Business rules for how to handle outlier or dirty data (e.g., discard, impute, flag)
+
+3.What Would Help Optimize the Data Model:
+A consistent mapping between scanned items and brands (currently, linkage via barcode is sparse or indirect)
+
+Clarification on the use of nested structures (e.g., item lists within receipts) — if we expect 1:many relationships, I recommend flattening these to a dedicated receipt_items table
+
+Metadata or data dictionaries from upstream teams would significantly streamline modeling
+
+4.Performance & Scaling Considerations:
+JSON documents with nested arrays can slow down processing at scale. I’ve designed the model using a star schema to ensure performant queries.
+
+For production pipelines, I’d suggest partitioning receipt data by purchaseDate and leveraging columnar formats (like Parquet).
+
+If the data size continues to grow, we may consider incremental loads and timestamp-based updates for better efficiency.
+
+Please review and let me know if can conenct to discuss these points further. 
+
+Thanks!
